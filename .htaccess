@@ -1,0 +1,8 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Applicaton runs from a sufolder localStore, otherwise comment the line
+RewriteRule ^(?!localStore/)(.*)$ index.php?url=$1 [L,NC]
+
+# Applicaton runs from a root, otherwise comment the line
+#RewriteRule ^(.*)$ index.php?url=$1 [L,NC]

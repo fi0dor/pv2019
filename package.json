@@ -1,0 +1,17 @@
+{
+    "name": "demo-store",
+    "version": "0.0.1",
+    "dependencies": {},
+    "devDependencies": {
+        "browser-sync": "^2.27.9",
+        "gulp": "^4.0.2",
+        "gulp-notify": "^4.0.0",
+        "gulp-phpunit": "^0.26.0",
+        "gulp-sass": "^5.1.0",
+        "gulp-watch": "^4.3.4",
+        "sass": "^1.49.10"
+    },
+    "scripts": {
+        "start": "gulp"
+    }
+}
