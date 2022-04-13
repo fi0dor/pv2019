@@ -41,6 +41,24 @@
             }
         }
 
+        public function runQueries($queryStr) 
+        {
+            $this->last = array();
+
+            if (!$this->connections->multi_query($queryStr)) {
+                trigger_error('Error executing query: ' . $queryStr . ' -' . $this->connections->error, E_USER_ERROR);
+            } else {
+                do {
+                    if ($result = $this->connections->store_result()) {
+                        $this->last[] = $result;
+                        $result->free();
+                    }
+                } while ($this->connections->more_results() && $this->connections->next_result());
+                
+                return true;
+            }
+        }
+
         public function getData() 
         {
             return $this->last->fetch_array(MYSQLI_ASSOC);

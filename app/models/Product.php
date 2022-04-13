@@ -56,7 +56,7 @@
             return $this->rows;
         }
 
-        public function getSingleProduct(int $id) 
+        public function getSingleProduct(int $id)
         {
             $this->db->runQuery("SELECT * FROM products WHERE id = '$id'");
             

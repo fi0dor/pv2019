@@ -3,18 +3,21 @@
     namespace App\Controllers;
 
     use Core\Controller; 
+    use App\Models\Category; 
     use App\Models\Product; 
     use App\Models\User; 
     use App\Models\Cart; 
 
     class HomeController extends Controller
     {
+        private $category;
         private $product;
         private $user;
         private $cart;
 
         public function __construct() 
         {
+            $this->category = new Category(); 
             $this->product = new Product(); 
             $this->user = new User(); 
             $this->cart = new Cart();  
@@ -22,8 +25,9 @@
 
         public function index()
         {
-            $all_Products = $this->product->getAllProducts();
-            $prev_Rated = $this->user->getUserRatingActivities();
+            $all_Categories = $this->category->getAllCategories();
+            $all_Products   = $this->product->getAllProducts();
+            $prev_Rated     = $this->user->getUserRatingActivities();
 
             if (!$prev_Rated) {
                 $prev_Rated = [];
@@ -31,6 +35,7 @@
         
             $this->render("home", [
                 'title'      => 'Welcome to Demo Store',
+                'categories' => $all_Categories,
                 'products'   => $all_Products,
                 'prev_rated' => $prev_Rated
             ]);

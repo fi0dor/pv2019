@@ -1,6 +1,7 @@
 <?php
 
-    $product = $data["product"];
+    $product  = $data["product"];
+    $category = $data["category"];
 
 ?>
 
@@ -18,7 +19,7 @@
                     </div>
                     
                     <div class="demo_product-content"> 
-                        <h6 class="float-left"><?= ucfirst($product["name"]); ?></h6>  
+                        <h6 class="float-left"><?= ucfirst($product["name"]); ?> &ndash; <?= ucfirst($category["name"]); ?></h6>
                         <h6 class="float-right demo_product-price"><?= $product["price"] . ' ' . EURO; ?></h6>
                         <p class="clearfix"></p>
                         <p><?= $product["caption"] ?></p>
@@ -26,7 +27,7 @@
                         <hr />
 
                         <div class="demo_product-buttons">
-                            <span class="float-left demo_product-rating-info">
+                            <span class="demo_product-rating-info">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
                                     <i class="fa fa-star demo_rating-<?= ($i <= (int) $product["average_rating"]) ? '' : 'un'; ?>rated" title="<?= $i; ?>"></i>
                                 <?php endfor; ?>
@@ -34,11 +35,9 @@
                                 <br />Average Rating <number>(<?= $product["average_rating"]; ?>)</number>
                             </span>
                             
-                            <span class="float-right demo_product-add-cart"> 
+                            <span class="demo_product-add-cart float-right"> 
                                 <button class="btn btn-primary demo_cart-add-btn" id="demo_cart-add-btn-<?= $product["id"] ?>">Add to Cart</button> 
                             </span>
-                            
-                            <div class="clearfix"></div>
                         </div>
 
                         <div class="demo_product-my-ratings" id="demo_product-my-ratings-<?= $product["id"] ?>">
@@ -56,7 +55,7 @@
                                 <?php endif; ?> 
                             </span>
                             
-                            <span class="float-right demo_product-add-cart"><label> <i class="fa fa-check"></i>Thank you!</label></span>
+                            <span class="demo_product-add-cart float-right"><label><i class="fa fa-check"></i> Thank you!</label></span>
                         </div>
                     </div>
                 </div>

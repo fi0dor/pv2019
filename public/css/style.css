@@ -108,11 +108,15 @@ html {
 .demo_listings {
   margin-bottom: 50px;
 }
+.demo_listings .tab-content > .active {
+  display: flex;
+  /* override the default Bootstrap behaviour */
+}
 
 .demo_list,
 .demo_product {
   padding: 10px;
-  margin-bottom: 20px;
+  margin-top: 20px;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.1);
 }
 .demo_list-container,
@@ -193,6 +197,11 @@ html {
   opacity: 0.8;
   font-weight: 500;
   display: block;
+}
+.demo_list .demo_list-add-cart,
+.demo_product .demo_list-add-cart {
+  display: flex;
+  justify-content: space-between;
 }
 
 .demo_rating-rated {
