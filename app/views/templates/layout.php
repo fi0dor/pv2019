@@ -93,7 +93,8 @@
          
         <script src="public/js/home.js"></script>
         <script src="public/js/cart.js"></script>
+        <script src="public/js/product.js"></script>
 
-        <?= $javascript_Content; ?>
+        <?= isset($javascript_Content) ? $javascript_Content : '' ?>
     </body>
 </html>

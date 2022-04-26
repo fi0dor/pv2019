@@ -36,7 +36,7 @@
                             </span>
                             
                             <span class="demo_product-add-cart float-right"> 
-                                <button class="btn btn-primary demo_cart-add-btn" id="demo_cart-add-btn-<?= $product["id"] ?>">Add to Cart</button> 
+                                <button class="btn btn-lg btn-primary demo_cart-add-btn" id="demo_cart-add-btn-<?= $product["id"] ?>">Add to Cart</button> 
                             </span>
                         </div>
 
@@ -60,6 +60,41 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="col-md-12">
+            <h4>Comments</h4>
+
+            <form class="border border-info rounded p-3" method="post" action="">
+                <input type="hidden" name="product-id" value="<?= $product["id"] ?>" ?>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6 mb-3">
+                        <label for="demo_comment-name"><b>Full name *</b></label>
+                        <input type="text" class="form-control" id="demo_comment-name" placeholder="Enter full name" required>
+                    </div>
+
+                    <div class="form-group col-md-6 mb-3">
+                        <label for="demo_comment_email"><b>Email address</b></label>
+                        <input type="email" class="form-control" id="demo_comment-email" aria-describedby="demo_comment-email-help" placeholder="Enter email">
+                        <small id="demo_comment-email-help" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                    </div>
+                </div>
+              
+                <div class="form-group">
+                    <label for="demo_comment-text"><b>Your comment *</b></label>
+                    <textarea class="form-control" id="demo_comment-text" rows="5" required></textarea>
+                </div>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="demo_comment-conditions">
+                    <label class="form-check-label" for="demo_comment-conditions">I agree to terms and conditions.</label>
+                </div>
+                
+                <button type="submit" class="btn btn-info demo_comment-submit" disabled>Submit comment</button>
+            </form>
         </div>
     </div>
 </div>
