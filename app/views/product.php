@@ -1,7 +1,8 @@
 <?php
 
-    $product  = $data["product"];
-    $category = $data["category"];
+    $product   = $data["product"];
+    $category  = $data["category"];
+    $comments  = $data["comments"];
 
 ?>
 
@@ -64,32 +65,40 @@
 
         <div class="clearfix"></div>
 
+
         <div class="col-md-12">
             <h4>Comments</h4>
 
-            <form class="border border-info rounded p-3" method="post" action="">
-                <input type="hidden" name="product-id" value="<?= $product["id"] ?>" ?>
+            <?php foreach ($comments as $comment): ?>
+                <article class="border rounded mb-3 p-3">
+                    <h6><b><?= $comment['name'] ?></b> <?= !empty($comment['email']) ? ' (' . $comment['email'] . ')' : '' ?></h6>
+                    <p class="m-0"><?= $comment['text'] ?></p>
+                </article>
+            <?php endforeach; ?> 
 
+            <h5>Add your comment</h5>
+
+            <form class="border border-info rounded p-3" method="post" action="product/saveComment/<?= $product["id"] ?>">
                 <div class="form-row">
                     <div class="form-group col-md-6 mb-3">
                         <label for="demo_comment-name"><b>Full name *</b></label>
-                        <input type="text" class="form-control" id="demo_comment-name" placeholder="Enter full name" required>
+                        <input type="text" name="full-name" class="form-control" id="demo_comment-name" placeholder="Enter full name" required>
                     </div>
 
                     <div class="form-group col-md-6 mb-3">
                         <label for="demo_comment_email"><b>Email address</b></label>
-                        <input type="email" class="form-control" id="demo_comment-email" aria-describedby="demo_comment-email-help" placeholder="Enter email">
+                        <input type="email" name="email" class="form-control" id="demo_comment-email" aria-describedby="demo_comment-email-help" placeholder="Enter email">
                         <small id="demo_comment-email-help" class="form-text text-muted">We'll never share your email with anyone else.</small>
                     </div>
                 </div>
               
                 <div class="form-group">
                     <label for="demo_comment-text"><b>Your comment *</b></label>
-                    <textarea class="form-control" id="demo_comment-text" rows="5" required></textarea>
+                    <textarea name="comment" class="form-control" id="demo_comment-text" rows="5" required></textarea>
                 </div>
 
                 <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="demo_comment-conditions">
+                    <input type="checkbox" name="conditions" class="form-check-input" id="demo_comment-conditions">
                     <label class="form-check-label" for="demo_comment-conditions">I agree to terms and conditions.</label>
                 </div>
                 
