@@ -71,8 +71,8 @@
 
             <?php foreach ($comments as $comment): ?>
                 <article class="border rounded mb-3 p-3">
-                    <h6><b><?= $comment['name'] ?></b> <?= !empty($comment['email']) ? ' (' . $comment['email'] . ')' : '' ?></h6>
-                    <p class="m-0"><?= $comment['text'] ?></p>
+                    <h6><b><?= htmlentities($comment['name']) ?></b> <?= !empty($comment['email']) ? ' (' . htmlentities($comment['email']) . ')' : '' ?></h6>
+                    <p class="m-0"><?= htmlentities($comment['text']) ?></p>
                 </article>
             <?php endforeach; ?> 
 
