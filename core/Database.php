@@ -67,7 +67,7 @@
         public function deleteData($table, $condition, $limit) 
         {
             $limit = ( $limit == '' ) ? '' : ' LIMIT ' . $limit;
-            $delete = "DELETE FROM {$table} WHERE {$condition} {$limit}";
+            $delete = "DELETE FROM {$table} WHERE " . $this->cleanData($condition) . " {$limit}";
             $this->runQuery($delete);
         }
 
@@ -78,53 +78,52 @@
      
         public function updateData($table, $changes, $condition) 
         {
-            $update = "UPDATE " . $table . " SET ";
+            $fields = array();
+            $values = array();
 
-            foreach ($changes as $field => $value) {
-                $update .= "`" . $field . "`='{$value}',";
-            }
+            foreach ($changes as $f => $v) {
+                $fields[] = $f;
+                $values[] = (is_numeric($v) && (intval($v) == $v)) ? (int) $v : $this->cleanData($v);
+            } 
 
-            $update = substr($update, 0, -1);
-            
+            $changes = array_map(function($f, $v) {
+                return "`{$f}`='{$v}'";
+            }, $fields, $values);
+
+            $update = "UPDATE " . $table . " SET " . implode(", ", $changes);
+
             if ($condition != '') {
-                $update .= "WHERE " . $condition;
+                $update .= " WHERE " . $this->cleanData($condition);
             }
-            
+
             $this->runQuery($update);
-            
+
             return true;
         }
 
         public function insertData($table, $data) 
         {
-            $fields = "";
-            $values = "";
+            $fields = array();
+            $values = array();
             
             foreach ($data as $f => $v) {
-                $fields .= "`$f`,";
-                $values .= (is_numeric($v) && (intval($v) == $v)) ?$v . "," : "'$v',";
+                $fields[] = $f;
+                $values[] = (is_numeric($v) && (intval($v) == $v)) ? (int) $v : $this->cleanData($v);
             } 
             
-            $fields = substr($fields, 0, -1);
-           
-            $values = substr($values, 0, -1);
-            $insert = "INSERT INTO $table ({$fields}) VALUES({$values})";
+            $insert = "INSERT INTO $table (`" . implode("`, `", $fields) . "`) VALUES('" . implode("', '", $values) . "')";
             
             return $this->runQuery($insert);
         }
 
         public function cleanData($value) 
         {
-            if (get_magic_quotes_gpc()) {
-                $value = stripslashes($value);
-            }
-            
             if (version_compare(phpversion(), "4.3.0") == "-1") {
                 $value = $this->connections->escape_string($value);
             } else {
                 $value = $this->connections->real_escape_string($value);
             }
-            
+
             return $value;
         }
     	 
