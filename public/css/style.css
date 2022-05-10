@@ -310,6 +310,18 @@ html {
   font-weight: 600;
 }
 
+/** Summary **/
+.demo_cart-summary-list .demo_cart-summary-list-item h6 {
+  font-weight: bold;
+}
+.demo_cart-summary-list .demo_cart-summary-list-item small {
+  display: inline-block;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /** For the Modal Area **/
 #demo_modal .modal-body {
   text-align: center;
