@@ -96,7 +96,7 @@ var home = {
 
                         if (response.message === "Failed") {
                             $("#demo_modal").modal(); 
-                            $("#demo_modal .modal-body").html('An error occured. Please refresh the page anf try again.');
+                            $("#demo_modal .modal-body").html('An error occured. Please refresh the page and try again.');
                         } else {
                             $(".demo_cart-counter").html(response.new_Count); 
                         }

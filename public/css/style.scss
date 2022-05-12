@@ -327,34 +327,27 @@ html {
     }
 }
 
-.demo_cart-summary {
-    margin-top: 25px;
-
-    span {
-        font-size: 22px;
-        color: #495057;
-        font-weight: 600;
-    }
-}
-
 /** Summary **/
 
-.demo_cart-summary-list {
-    .demo_cart-summary-list-item {
+.demo_cart-summary {
+    .demo_cart-summary-product {
         h6 {
             font-weight: bold;
         }
 
         small {
-            display: inline-block;
-            max-width: 90%;
-            white-space: nowrap;
+            display: -webkit-box; 
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            max-width: 100%;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
     }
-}
 
+    .demo_cart-summary-promo-code:empty {
+        display: none !important;
+    }
+}
 
 /** For the Modal Area **/
 

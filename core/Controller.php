@@ -27,6 +27,17 @@
 
             require_once VIEW_ROOT . 'templates/layout.php';
         }
+
+        public function renderToString($filename, $data)
+        { 
+            if (file_exists(VIEW_ROOT . "{$filename}.php")) {
+                ob_start();
+                require VIEW_ROOT . "{$filename}.php";
+                return ob_get_clean();
+            }
+
+            return false;
+        }
     }
 
 ?>

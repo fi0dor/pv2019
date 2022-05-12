@@ -12,10 +12,6 @@
         private $user;
         private $product;
         private $cart;
-        private $promo_Codes = array(
-            'BLACKFRIDAY22' => '-5',
-            'BIGSALE'       => '-10%'
-        );
 
         public function __construct() 
         {
@@ -87,7 +83,48 @@
             exit(json_encode($payload));
         }
 
-        public function computeCartCost(array $cart_Records, string $promo_Code = null)
+        public function updatePromoCode(string $promo_Code)
+        {
+            $payload = array();
+
+            $promo_Value = $this->cart->getSinglePromoCode($promo_Code);
+
+            if (!empty($promo_Code) && empty($promo_Value)) {
+                $payload = array( 
+                    'message'    => 'Failed', 
+                    'promo_Code' => $promo_Code
+                );
+            }
+
+            if (!empty($promo_Code) && !empty($promo_Value) && $promo_Code !== $this->cart->getPromoCode()) {
+                $payload = array( 
+                    'message'             => 'Success', 
+                    'html'                => $this->renderToString("promoCode", [
+                                                'promo_code'  => $promo_Code,
+                                                'promo_value' => $promo_Value
+                                             ]),
+                    'promo_Code'          => $promo_Code,
+                    'new_Total_Cart_Cost' => $this->computeCartCost($this->cart->getAllCartRecords(), $promo_Value)
+                );
+
+                $this->cart->savePromoCode($promo_Code);
+            }
+            
+            if (empty($promo_Code) && $this->cart->getPromoCode()) {
+                $payload = array( 
+                    'message'             => 'Removed',
+                    'html'                => '',
+                    'promo_Code'          => $this->cart->getPromoCode(),
+                    'new_Total_Cart_Cost' => $this->computeCartCost($this->cart->getAllCartRecords(), null)
+                );
+
+                $this->cart->removePromoCode();
+            }
+
+            exit(json_encode($payload));
+        }
+
+        public function computeCartCost(array $cart_Records, string $promo_Value = null)
         {
             $total_Cost = 0;
             $i = 0;
@@ -98,12 +135,10 @@
                 }
             }
 
-            if (array_key_exists($promo_Code, $this->promo_Codes)) {
-                if (strpos($this->promo_Codes[$promo_Code], '%') > 0) {
-                    $total_Cost *= (100 + intval($this->promo_Codes[$promo_Code])) / 100;
-                } else {
-                    $total_Cost += intval($this->promo_Codes[$promo_Code]);
-                }
+            if (strpos($promo_Value, '%') > 0) {
+                $total_Cost *= (100 + intval($promo_Value)) / 100;
+            } else {
+                $total_Cost += intval($promo_Value);
             }
         
             return round((float) $total_Cost, 2);
@@ -121,19 +156,19 @@
                 } 
             }
             
-            $applied_Promo_Code = array_key_first($this->promo_Codes);
-            $applied_Promo_Value = $this->promo_Codes[$applied_Promo_Code];
+            $promo_Code = $this->cart->getPromoCode();
+            $promo_Value = $this->cart->getSinglePromoCode($promo_Code);
 
             $all_Product_Records = $this->product->getAllProducts();
-            $total_Cart_Cost = $this->computeCartCost($all_Cart_Records, $applied_Promo_Code);
+            $total_Cart_Cost = $this->computeCartCost($all_Cart_Records, $promo_Value);
 
             $this->render("summary", [
-                'title'               => 'Cart Summary', 
-                'all_cart_products'   => $cart_Products, 
-                'all_cart_quantity'   => $all_Cart_Records,
-                'applied_promo_code'  => $applied_Promo_Code,
-                'applied_promo_value' => $applied_Promo_Value,
-                'cart_cost'           => $total_Cart_Cost
+                'title'             => 'Cart Summary', 
+                'all_cart_products' => $cart_Products, 
+                'all_cart_quantity' => $all_Cart_Records,
+                'promo_code'        => $promo_Code,
+                'promo_value'       => $promo_Value,
+                'cart_cost'         => $total_Cart_Cost
             ]);
         }
 
@@ -142,7 +177,7 @@
             $all_Cart_Records = $this->cart->getAllCartRecords();
             $total_Cart_Cost = (gettype($all_Cart_Records) === 'array') ? $this->computeCartCost($all_Cart_Records) : 0;
              
-            if ($this->cart->removeAllCarts()) {   
+            if ($this->cart->removeAllCarts() && $this->cart->removePromoCode()) {   
                 $shipping_Cost = ($pick_up_type === 'UPS' ? UPS_SHIPPING_COST : PICK_UP_COST);
                 $balance = $this->user->getUserWalletBalance() - ($total_Cart_Cost + $shipping_Cost);
                 $newUserWalletBalance = $balance < 1 ? 0 : (float) $balance;

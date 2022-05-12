@@ -1,7 +1,34 @@
 var cart = { 
+    redeemPromoCode: function(event) {
+        const formElem = $(event.currentTarget);
+        const promoCode = $('input', formElem).val();
+
+        $.getJSON('cart/updatePromoCode/' + promoCode).done(function(response) {
+            if (!response.message) {
+                return;
+            }
+
+            switch (response.message) {
+                case "Failed" : var action = 'not found'; break;
+                case "Success": var action = 'added'; break;
+                case "Removed": var action = 'removed'; break;
+            }
+
+            $("#demo_modal").modal(); 
+            $("#demo_modal .modal-body").html(`The promo code ${response.promo_Code} was ${action}.`);
+
+            $(".demo_checkout-gross-total").html(response.new_Total_Cart_Cost)
+            $(".demo_cart-summary-promo-code").html(response.html);
+        }).fail(function() {
+            console.error("Request Failed: Promo code unknown");
+        });
+
+        event.preventDefault();
+    },
+
     update: function(currElem) { 
         const [self, currWrap] = [this, $(currElem).parent()];
-        
+
         self.productID = parseInt($(currElem).attr('id').replace(/\D/g, '')); 
 
         const updateQty = parseInt($("#input-" + self.productID).val().replace(/\D/g, '')); 
@@ -127,13 +154,13 @@ var cart = {
                     case "removeCart":
                         if (response.message === "Success") {     
                             $(currElem).html('Remove Product').attr('disabled', false); 
-                            $("#cart-"+self.productID).fadeOut(1000);
+                            $("#cart-" + self.productID).fadeOut(1000);
                             $(".demo_cart-counter").html(response.new_Total_Count);
                             
-                            const unit_Cost = $("#demo_cart-unit-cost-"+self.productID).html();
+                            const unit_Cost = $("#demo_cart-unit-cost-" + self.productID).html();
                             const new_Uniqe_Cost = parseFloat(unit_Cost * response.new_Unique_Count).toFixed(2);
                             
-                            $("#demo_cart-single-total-cost-"+self.productID).html(new_Uniqe_Cost);
+                            $("#demo_cart-single-total-cost-" + self.productID).html(new_Uniqe_Cost);
                             $(".demo_cart-total-cost").html(response.new_Total_Cart_Cost);
                         }
                         
@@ -157,4 +184,5 @@ $(document).ready(function() {
     $(".demo_shipping-type").change(function(){cart.updateShippingCost(this)}); 
     $(".demo_checkout-summary").click(function(){cart.summary(this)}); 
     $(".demo_checkout-btn").click(function(){cart.preCheckout(this)});
+    $(".demo_cart-promo-code").submit(cart.redeemPromoCode);
 });

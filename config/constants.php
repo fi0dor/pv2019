@@ -33,6 +33,7 @@
 
 	// CART
 	define("USER_CART_TAG", "cart_id");
+	define("USER_CART_PROMO_CODE", "cart_promo_code");
 
 	// CHECK OUT DEFAULTS
 	define("PICK_UP_COST", 0);

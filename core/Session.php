@@ -82,6 +82,29 @@
             return false;
         }
 
+        public function savePromoCode($promo_Code)
+        {   
+            $_SESSION[USER_CART_PROMO_CODE] = $promo_Code;
+
+            return true;
+        }
+
+        public function getPromoCode()
+        {
+            if (isset($_SESSION[USER_CART_PROMO_CODE])) {  
+                return $_SESSION[USER_CART_PROMO_CODE];    
+            }
+
+            return false;
+        }
+
+        public function removePromoCode()
+        {
+            unset($_SESSION[USER_CART_PROMO_CODE]);
+            
+            return true;
+        }
+
         public function saveCart($product_Id)
         {   
             if (!isset($_SESSION[USER_CART_TAG])) {

@@ -1,5 +1,9 @@
 <?php
-    
+
+    $promoCodeTemplate = $this->renderToString("promoCode", [
+        'promo_code'  => $data["promo_code"], 
+        'promo_value' => $data["promo_value"]
+    ]);
 
 ?>
 
@@ -16,36 +20,30 @@
                     <span class="badge badge-secondary badge-pill"><?= count($data["all_cart_products"]) ?></span>
                 </h4>
 
-                <ul class="list-group mb-3 demo_cart-summary-list">
+                <ul class="list-group mb-3 demo_cart-summary">
                     <?php foreach ($data["all_cart_products"] as $cart): ?>
-                        <li class="list-group-item d-flex justify-content-between lh-condensed demo_cart-summary-list-item" id="cart-<?= $cart["id"]; ?>">
+                        <li class="list-group-item d-flex justify-content-between lh-condensed demo_cart-summary-product" id="cart-<?= $cart["id"]; ?>">
                             <div>
                                 <h6 class="my-0"><?= $cart["name"] . " ({$data["all_cart_quantity"][$cart["id"]]}&times;)"; ?></h6>
                                 <small class="text-muted"><?= $cart["caption"] ?></small>
                             </div>
-                            <span class="text-muted"><?= (float) $cart["price"] * $data["all_cart_quantity"][$cart["id"]] . '&nbsp;' . EURO; ?></span>
+                            <span class="text-muted"><?= (float) $cart["price"] * $data["all_cart_quantity"][$cart["id"]] . '&nbsp;' . EURO ?></span>
                         </li>
                     <?php endforeach; ?>
 
-                    <?php if (isset($data["applied_promo_code"]) && isset($data["applied_promo_value"])): ?>
-                        <li class="list-group-item d-flex justify-content-between bg-light">
-                            <div class="text-success">
-                                <h6 class="my-0">Promo code</h6>
-                                <small><?= $data["applied_promo_code"] ?></small>
-                            </div>
-                            <span class="text-success"><?= $data["applied_promo_value"] ?>&nbsp;<?= strpos($data["applied_promo_value"], '%') > 0 ? '%' : EURO ?></span>
-                        </li>
-                    <?php endif; ?>
+                    <?php $promo  ?>
+
+                    <li class="list-group-item d-flex justify-content-between bg-light demo_cart-summary-promo-code"><?= $promoCodeTemplate ?></li>
 
                     <li class="list-group-item d-flex justify-content-between">
-                        <span>Total Price (<?= EURO; ?>)</span>
-                        <strong><?= $data["cart_cost"] . '&nbsp;' . EURO; ?></strong>
+                        <span>Total Price (<?= EURO ?>)</span>
+                        <strong><span class="demo_checkout-gross-total"><?= $data["cart_cost"] ?></span> <?= EURO ?></strong>
                     </li>
                 </ul>
 
-                <form class="card p-2">
+                <form class="card p-2 demo_cart-promo-code">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Promo code">
+                        <input type="text" class="form-control" value="" placeholder="Promo code">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-secondary">Redeem</button>
                         </div>
@@ -78,7 +76,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="phoneNumber"><b>Phone number *</b></label>
-                            <input type="tel" class="form-control" id="phoneNumber" placeholder="123-456-7890" value="" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+                            <input name="phoneNumber" type="tel" class="form-control" id="phoneNumber" placeholder="123-456-7890" value="" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
                             <div class="invalid-feedback">
                                 Valid phone number is required.
                             </div>
