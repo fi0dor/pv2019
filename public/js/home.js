@@ -1,37 +1,37 @@
 var home = { 
     currStarred: [],
 
-    ratingAlternator: function (currElem, altType) { 
+    ratingAlternator: function(currElem, altType) { 
         // Run a count to hold current state for this product rating
         const [self, currWrap] = [this, $(currElem).parent()];
     
         self.getStarred(currWrap); 
         
         switch (altType) {
-            case "hover":   
+            case 'hover':   
                 $(currElem).prevAll().addClass('demo_rating-rated');
                 $(currElem).nextAll().removeClass('demo_rating-rated'); 
                 $(currElem).addClass('demo_rating-rated'); 
 
                 break;
 
-            case "click":
+            case 'click':
                 self.clickedIndex = parseInt ($(currElem).index() ) + 1; 
                 for (var i = 0; i < $(currElem).index(); i++)
                 { 
-                    $(currWrap).children('.fa').eq(i).addClass("demo_rating-rated");
+                    $(currWrap).children('.fa').eq(i).addClass('demo_rating-rated');
                 }    
                 self.productID = parseInt( $(currWrap).parents().eq(3).attr('id').replace(/\D/g, ''));
-                return self.theTransporter(currWrap, currElem, "rate");
+                return self.theTransporter(currWrap, currElem, 'rate');
 
                 break;
 
-            case "exit":
+            case 'exit':
                 var defaultStarred = parseInt($(currWrap).children('number').html().replace(/\D/g, '')); 
-                $(currWrap).children('.fa').removeClass("demo_rating-rated");
+                $(currWrap).children('.fa').removeClass('demo_rating-rated');
                 for (var i = 0; i < defaultStarred; i++)
                 { 
-                    $(currWrap).children('.fa').eq(i).addClass("demo_rating-rated");
+                    $(currWrap).children('.fa').eq(i).addClass('demo_rating-rated');
                 }   
         }                     
     },
@@ -50,16 +50,16 @@ var home = {
     productID: 1,
     clickedIndex: '',
 
-    asyncFileExt: function (type) { 
+    asyncFileExt: function(type) { 
         return type === 1 ? '.php' : '';
     },
 
-    addToCart: function (currBtn) {
+    addToCart: function(currBtn) {
         const self = this;
-        $(currBtn).html('Updating cart...').attr('disabled', true);
+        $(currBtn).html('Updating cart&hellip;').attr('disabled', true);
         const currWrap = $(currBtn).parent();
         self.productID = parseInt($(currBtn).attr('id').replace(/\D/g, '')); 
-        self.theTransporter(currWrap, currBtn, "addToCart");
+        self.theTransporter(currWrap, currBtn, 'addToCart');
     },
 
     theTransporter: function(currWrap, currElem, action) {
@@ -68,37 +68,37 @@ var home = {
         $.ajax({ 
             dataType: 'json',
             type: 'POST',  
-            url: "home/" + action + "/" + parseInt("2") + "/" + parseInt(self.productID) + "/" + self.clickedIndex,
+            url: 'home/' + action + '/' + parseInt('2') + '/' + parseInt(self.productID) + '/' + self.clickedIndex,
             contentType: 'application/x-www-form-urlencoded',
-            success: function (response, status, xhr) { 
+            success: function(response, status, xhr) { 
                 
                 switch (action) {
-                    case "rate":
-                        $("#demo_modal").modal(); 
+                    case 'rate':
+                        $('#demo_modal').modal(); 
                         
-                        if (response.message === "Duplicate") { 
-                            $("#demo_modal .modal-body").html('You have already submitted a rating for this product.');
-                        } else if (response.message === "Failed") {
-                            $("#demo_modal .modal-body").html('An error occured. Please try again later.');
+                        if (response.message === 'Duplicate') { 
+                            $('#demo_modal .modal-body').html('You have already submitted a rating for this product.');
+                        } else if (response.message === 'Failed') {
+                            $('#demo_modal .modal-body').html('An error occured. Please try again later.');
                         } else {
-                            $("#demo_modal .modal-body").html('Thank you for rating this product.');
+                            $('#demo_modal .modal-body').html('Thank you for rating this product.');
                             $(currWrap).children('number').html('(' + response.new_rating + ')');
                             
                             for (var i = 0; i < parseInt(response.new_rating); i++) { 
-                                $(currWrap).children('.fa').eq(i).addClass("demo_rating-rated");
+                                $(currWrap).children('.fa').eq(i).addClass('demo_rating-rated');
                             }  
                         }
                         
                         break;
 
-                    case "addToCart": 
+                    case 'addToCart': 
                         $(currElem).html('Add To Cart').attr('disabled', false); 
 
-                        if (response.message === "Failed") {
-                            $("#demo_modal").modal(); 
-                            $("#demo_modal .modal-body").html('An error occured. Please refresh the page and try again.');
+                        if (response.message === 'Failed') {
+                            $('#demo_modal').modal(); 
+                            $('#demo_modal .modal-body').html('An error occured. Please refresh the page and try again.');
                         } else {
-                            $(".demo_cart-counter").html(response.new_Count); 
+                            $('.demo_cart-counter').html(response.new_Count); 
                         }
                     
                         break;
@@ -107,7 +107,7 @@ var home = {
                         break;
                 }
             },
-            error: function (xhr, status, error) { 
+            error: function(xhr, status, error) { 
                 alert(error);
                 return false;
             }
@@ -116,12 +116,12 @@ var home = {
 }
 
 $(document).ready(function() {
-    $(".demo_list-rating-info i, .demo_product-rating-info i")
-        .mouseenter(function(){home.ratingAlternator(this, "hover")})
-        .click(function(){home.ratingAlternator(this, "click")})
-        .mouseleave(function(){home.ratingAlternator(this, "exit");});
+    $('.demo_list-rating-info i, .demo_product-rating-info i')
+        .mouseenter(function(){home.ratingAlternator(this, 'hover')})
+        .click(function(){home.ratingAlternator(this, 'click')})
+        .mouseleave(function(){home.ratingAlternator(this, 'exit');});
     
-    $(".demo_cart-add-btn").click(function(){home.addToCart(this)}); 
+    $('.demo_cart-add-btn').click(function(){home.addToCart(this)}); 
      
-    $('.demo_list-my-ratings, .demo_product-my-ratings').css("display", "none");
+    $('.demo_list-my-ratings, .demo_product-my-ratings').css('display', 'none');
 });

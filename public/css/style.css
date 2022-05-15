@@ -301,7 +301,55 @@ html {
   color: green;
 }
 
+/** Step Wizard **/
+.stepwizard {
+  width: 100%;
+  margin-bottom: 20px;
+}
+.stepwizard .stepwizard-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.stepwizard .stepwizard-row:before {
+  position: absolute;
+  top: 14px;
+  bottom: 0;
+  content: " ";
+  width: calc(100% - 30px);
+  height: 1px;
+  background-color: #ccc;
+  z-index: 0;
+}
+.stepwizard .stepwizard-row .stepwizard-step {
+  flex-grow: 1;
+  text-align: center;
+  z-index: 1;
+}
+.stepwizard .stepwizard-row .stepwizard-step p {
+  margin-top: 0px;
+  color: #666;
+}
+.stepwizard .btn.disabled,
+.stepwizard .btn[disabled],
+.stepwizard fieldset[disabled] .btn {
+  opacity: 1 !important;
+  color: #bbb;
+}
+.stepwizard .btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 18px;
+  border-radius: 15px;
+}
+
 /** Summary **/
+.lh-condensed {
+  line-height: 1.25em;
+}
+
 .demo_cart-summary .demo_cart-summary-product h6 {
   font-weight: bold;
 }
@@ -314,6 +362,10 @@ html {
 }
 .demo_cart-summary .demo_cart-summary-promo-code:empty {
   display: none !important;
+}
+
+.setup-content ~ .setup-content {
+  display: none;
 }
 
 /** For the Modal Area **/
