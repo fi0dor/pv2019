@@ -23,20 +23,42 @@ html {
 
 .demo_navbar {
     background: #4e04ec !important;
+
+    .navbar-text {
+        transition: transform .1s;
+
+        &:hover {
+            transform: scale(1.15);
+        }
+
+        a:hover {
+            text-decoration: none !important;
+        }
+    }
 }
 
 .demo_navbar-brand {
     font-weight: bold;
 }
 
-.demo_navbar-nav > .nav-item {
-    & > a {
-        font-size: 18px !important;
-        margin-bottom: 12px;
-    }
+.demo_navbar-nav {
+    & > .nav-item {
+        margin-right: 10px;
+        border-bottom: 2px solid transparent;
+        background-color: rgba(0, 0, 0, 0.05);
 
-    &:hover a {
-        border-bottom: 2px solid #fff;
+        &.active {
+            border-bottom-color: #6c757d;
+        }
+
+        &:hover {
+            border-bottom-color: #fff;
+        }
+
+        .nav-link {
+            color: #fff;
+            font-size: 1.4em;
+        }
     }
 }
 

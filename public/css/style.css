@@ -23,17 +23,34 @@ html {
 .demo_navbar {
   background: #4e04ec !important;
 }
+.demo_navbar .navbar-text {
+  transition: transform 0.1s;
+}
+.demo_navbar .navbar-text:hover {
+  transform: scale(1.15);
+}
+.demo_navbar .navbar-text a:hover {
+  text-decoration: none !important;
+}
 
 .demo_navbar-brand {
   font-weight: bold;
 }
 
-.demo_navbar-nav > .nav-item > a {
-  font-size: 18px !important;
-  margin-bottom: 12px;
+.demo_navbar-nav > .nav-item {
+  margin-right: 10px;
+  border-bottom: 2px solid transparent;
+  background-color: rgba(0, 0, 0, 0.05);
 }
-.demo_navbar-nav > .nav-item:hover a {
-  border-bottom: 2px solid #fff;
+.demo_navbar-nav > .nav-item.active {
+  border-bottom-color: #6c757d;
+}
+.demo_navbar-nav > .nav-item:hover {
+  border-bottom-color: #fff;
+}
+.demo_navbar-nav > .nav-item .nav-link {
+  color: #fff;
+  font-size: 1.4em;
 }
 
 .demo_banner {
