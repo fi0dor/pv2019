@@ -4,5 +4,5 @@
         <small><?= $data["promo_code"]["description"] ?></small>
     </div>
     
-    <span class="text-success"><?= $data["promo_code"]["cost"] ?>&nbsp;<?= strpos($data["promo_code"]["cost"], '%') > 0 ? '' : EURO ?></span>
+    <span class="text-success"><?= $data["promo_code"]["cost"] ?> <?= strpos($data["promo_code"]["cost"], '%') > 0 ? '' : EURO ?></span>
 <?php endif; ?>

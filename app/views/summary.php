@@ -62,7 +62,7 @@
                             <p><small>Billing address</small></p>
                         </div>
                         <div class="stepwizard-step col-xs-3"> 
-                            <a href="#step-2" role="button" class="btn btn-secondary btn-circle" aria-disabled="true" tabindex="-1">2</a>
+                            <a href="#step-2" role="button" class="btn btn-secondary btn-circle disabled" aria-disabled="true" tabindex="-1">2</a>
                             <p><small>Shipping</small></p>
                         </div>
                         <div class="stepwizard-step col-xs-3"> 
