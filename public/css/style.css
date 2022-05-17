@@ -360,6 +360,7 @@ html {
   max-width: 100%;
   overflow: hidden;
 }
+.demo_cart-summary .demo_cart-summary-shipping-type:empty,
 .demo_cart-summary .demo_cart-summary-promo-code:empty {
   display: none !important;
 }

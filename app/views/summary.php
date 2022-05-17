@@ -1,8 +1,11 @@
 <?php
 
+    $shippingTypeTemplate = $this->renderToString("shippingType", [
+        "shipping_type" => $data["shipping_type"]
+    ]);
+
     $promoCodeTemplate = $this->renderToString("promoCode", [
-        'promo_code'  => $data["promo_code"], 
-        'promo_value' => $data["promo_value"]
+        "promo_code" => $data["promo_code"]
     ]);
 
 ?>
@@ -31,11 +34,13 @@
                         </li>
                     <?php endforeach; ?>
 
+                    <li class="list-group-item d-flex justify-content-between bg-light demo_cart-summary-shipping-type"><?= $shippingTypeTemplate ?></li>
+
                     <li class="list-group-item d-flex justify-content-between bg-light demo_cart-summary-promo-code"><?= $promoCodeTemplate ?></li>
 
                     <li class="list-group-item d-flex justify-content-between">
                         <span>Total Price (<?= EURO ?>)</span>
-                        <strong><span class="demo_checkout-gross-total"><?= $data["cart_cost"] ?></span> <?= EURO ?></strong>
+                        <strong class="demo_checkout-gross-total" data-value="<?= $data["cart_cost"] ?>"><span><?= $data["cart_cost"] ?></span> <?= EURO ?></strong>
                     </li>
                 </ul>
 
@@ -57,7 +62,7 @@
                             <p><small>Billing address</small></p>
                         </div>
                         <div class="stepwizard-step col-xs-3"> 
-                            <a href="#step-2" role="button" class="btn btn-secondary btn-circle disabled" aria-disabled="true" tabindex="-1">2</a>
+                            <a href="#step-2" role="button" class="btn btn-secondary btn-circle" aria-disabled="true" tabindex="-1">2</a>
                             <p><small>Shipping</small></p>
                         </div>
                         <div class="stepwizard-step col-xs-3"> 
@@ -67,7 +72,7 @@
                     </div>
                 </div>
 
-                <form class="demo_cart-order needs-validation" novalidate>
+                <form class="demo_cart-order needs-validation" novalidate method="post" action="cart/checkout/">
                     <div class="panel panel-primary setup-content" id="step-1">
                         <div class="panel-heading">
                             <h3 class="panel-title">Billing address</h3>
@@ -77,7 +82,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="firstName"><b>First name *</b></label>
-                                    <input type="text" class="form-control" id="firstName" placeholder="" value="" required>
+                                    <input name="firstName" type="text" class="form-control" id="firstName" value="" required>
                                     <div class="invalid-feedback">
                                         Valid first name is required.
                                     </div>
@@ -85,7 +90,7 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label for="lastName"><b>Last name *</b></label>
-                                    <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
+                                    <input name="lastName" type="text" class="form-control" id="lastName" value="" required>
                                     <div class="invalid-feedback">
                                         Valid last name is required.
                                     </div>
@@ -103,7 +108,7 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label for="email"><b>Email address *</b></label>
-                                    <input type="email" class="form-control" id="email" placeholder="name.surname@gmail.com" required>
+                                    <input name="email" type="email" class="form-control" id="email" placeholder="name.surname@gmail.com" required>
                                     <div class="invalid-feedback">
                                         Please enter a valid email address for shipping updates.
                                     </div>
@@ -112,7 +117,7 @@
 
                             <div class="mb-3">
                                 <label for="address"><b>Address *</b></label>
-                                <input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
+                                <input name="address" type="text" class="form-control" id="address" placeholder="1234 Main St" required>
                                 <div class="invalid-feedback">
                                     Please enter your shipping address.
                                 </div>
@@ -120,13 +125,13 @@
 
                             <div class="mb-3">
                                 <label for="address2"><b>Address 2</b></label>
-                                <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
+                                <input name="address2" type="text" class="form-control" id="address2" placeholder="Apartment or suite">
                             </div>
 
                             <div class="row">
                                 <div class="col-md-5 mb-3">
                                     <label for="country"><b>Country *</b></label>
-                                    <select class="custom-select d-block w-100" id="country" required>
+                                    <select name="country" class="custom-select d-block w-100" id="country" required>
                                         <option value="" disabled selected hidden>Please select the country</option>
                                         <option>United Kingdom</option>
                                         <option>United States</option>
@@ -138,25 +143,15 @@
 
                                 <div class="col-md-3 mb-3">
                                     <label for="zip"><b>Zip *</b></label>
-                                    <input type="text" class="form-control" id="zip" placeholder="" required>
+                                    <input name="zip" type="text" class="form-control" id="zip" required>
                                     <div class="invalid-feedback">
                                         Zip code required.
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="same-address">
-                                <label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
-                            </div>
-
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="save-info">
-                                <label class="custom-control-label" for="save-info">Save this information for next time</label>
-                            </div>
                         </div>
 
-                        <button class="btn btn-primary nextBtn float-right" type="button">Proceed to Shipping</button>
+                        <button class="btn btn-primary nextBtn float-right" type="button" data-jump-to="#step-2">Proceed to Shipping</button>
                     </div>
 
                     <div class="panel panel-primary setup-content" id="step-2">
@@ -165,18 +160,59 @@
                         </div>
                         
                         <div class="panel-body">
-                            <div class="custom-control custom-radio">
-                                <input id="pick-up" name="shippingType" value="PickUp" type="radio" class="demo_shipping-type custom-control-input" checked required>
-                                <label class="custom-control-label" for="pick-up">Pick Up (<?= PICK_UP_COST . ' ' . EURO ?>)</label>
+                            <div class="d-block my-3">
+                                <?php foreach ($data["all_shipping_types"] as $key => $shipping): ?>
+                                    <div class="custom-control custom-radio">
+                                        <input name="shippingType" type="radio" id="shipping<?= $key ?>" value="<?= $key ?>" class="demo_shipping-type custom-control-input" <?= ($key === $data["shipping_type"]["key"]) ? "checked" : "" ?> required>
+                                        <label class="custom-control-label" for="shipping<?= $key ?>"><?= $shipping["description"] ?> (<?= $shipping["cost"] . ' ' . EURO ?>)</label>
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
 
-                            <div class="custom-control custom-radio">
-                                <input id="ups" name="shippingType" value="UPS" type="radio" class="demo_shipping-type custom-control-input" required>
-                                <label class="custom-control-label" for="ups">UPS (<?= UPS_SHIPPING_COST . ' ' . EURO ?>)</label>
+                            <div class="custom-control custom-checkbox">
+                                <input name="sameAddress" type="checkbox" class="custom-control-input" id="sameAddress" checked>
+                                <label class="custom-control-label" for="sameAddress">Shipping address is the same as my billing address</label>
+                            </div>
+
+                            <div class="d-none my-3 demo_cart-shipping-address">
+                                <div class="mb-3">
+                                    <label for="shippingAddress"><b>Address *</b></label>
+                                    <input name="shippingAddress" type="text" class="form-control" id="shippingAddress" placeholder="1234 Main St" required>
+                                    <div class="invalid-feedback">
+                                        Please enter your shipping address.
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="shippingAddress2"><b>Address 2</b></label>
+                                    <input name="shippingAddress2" type="text" class="form-control" id="shippingAddress2" placeholder="Apartment or suite">
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-5 mb-3">
+                                        <label for="shippingCountry"><b>Country *</b></label>
+                                        <select name="shippingCountry" class="custom-select d-block w-100" id="shippingCountry" required>
+                                            <option value="" disabled selected hidden>Please select the country</option>
+                                            <option>United Kingdom</option>
+                                            <option>United States</option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Please select a valid country.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 mb-3">
+                                        <label for="shippingZip"><b>Zip *</b></label>
+                                        <input name="shippingZip" type="text" class="form-control" id="shippingZip" required>
+                                        <div class="invalid-feedback">
+                                            Zip code required.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <button class="btn btn-primary nextBtn float-right" type="button">Proceed to Payment</button>
+                        <button class="btn btn-primary nextBtn float-right" type="button" data-jump-to="#step-3">Proceed to Payment</button>
                     </div>
 
                     <div class="panel panel-primary setup-content" id="step-3">
@@ -187,25 +223,25 @@
                         <div class="panel-body">
                             <div class="d-block my-3">
                                 <div class="custom-control custom-radio">
-                                    <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
+                                    <input type="radio" id="credit" name="paymentMethod" class="custom-control-input" required>
                                     <label class="custom-control-label" for="credit">Credit card</label>
                                 </div>
 
                                 <div class="custom-control custom-radio">
-                                    <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required>
+                                    <input type="radio" id="debit" name="paymentMethod" class="custom-control-input" required>
                                     <label class="custom-control-label" for="debit">Debit card</label>
                                 </div>
 
                                 <div class="custom-control custom-radio">
-                                    <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required>
+                                    <input type="radio" id="paypal" name="paymentMethod" class="custom-control-input" required>
                                     <label class="custom-control-label" for="paypal">PayPal</label>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="cc-name"><b>Name on card *</b></label>
-                                    <input type="text" class="form-control" id="cc-name" placeholder="" required>
+                                    <label for="ccName"><b>Name on card *</b></label>
+                                    <input name="ccName" type="text" class="form-control" id="ccName" required>
                                     <small class="text-muted">Full name as displayed on card</small>
                                     <div class="invalid-feedback">
                                         Name on card is required
@@ -213,8 +249,8 @@
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label for="cc-number"><b>Credit card number *</b></label>
-                                    <input type="text" class="form-control" id="cc-number" placeholder="" required>
+                                    <label for="ccNumber"><b>Credit card number *</b></label>
+                                    <input name="ccNumber" type="text" class="form-control" id="ccNumber" required>
                                     <div class="invalid-feedback">
                                         Credit card number is required
                                     </div>
@@ -223,24 +259,29 @@
 
                             <div class="row">
                                 <div class="col-md-3 mb-3">
-                                    <label for="cc-expiration"><b>Expiration *</b></label>
-                                    <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
+                                    <label for="ccExpiration"><b>Expiration *</b></label>
+                                    <input name="ccExpiration" type="text" class="form-control" id="ccExpiration" required>
                                     <div class="invalid-feedback">
                                         Expiration date is required
                                     </div>
                                 </div>
 
                                 <div class="col-md-3 mb-3">
-                                    <label for="cc-cvv"><b>CVV *</b></label>
-                                    <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+                                    <label for="ccCvv"><b>CVV *</b></label>
+                                    <input name="ccCvv" type="text" class="form-control" id="ccCvv" required>
                                     <div class="invalid-feedback">
                                         Security code is required
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="custom-control custom-checkbox">
+                                <input name="saveFormData" type="checkbox" class="custom-control-input" id="saveFormData">
+                                <label class="custom-control-label" for="saveFormData">Save this form information for next time</label>
+                            </div>
                         </div>
 
-                        <button class="btn btn-primary btn-lg float-right demo_checkout-btn" type="submit">Place the Order</button>
+                        <button class="btn btn-primary btn-lg float-right" type="submit">Place the Order</button>
                     </div>
                 </form>
             </div>

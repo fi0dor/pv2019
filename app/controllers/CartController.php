@@ -47,7 +47,7 @@
         {   
             if ((int) $quantity < 1 || !is_numeric($quantity)) {
                 $payload = array( 
-                    'message' => 'Quantity must not be less than 1 and it must be an integer'
+                    'message' => 'Quantity must not be less than 1 and it must be an integer.'
                 );
 
                 exit(json_encode($payload));
@@ -83,6 +83,34 @@
             exit(json_encode($payload));
         }
 
+        public function updateShippingType(string $shipping_Type)
+        {
+            $payload = array();
+
+            $shipping_Value = $this->cart->getSingleShippingType($shipping_Type);
+
+            if (!empty($shipping_Type) && empty($shipping_Value)) {
+                $payload = array( 
+                    'message'    => 'Failed', 
+                    'shipping_Type' => $shipping_Type
+                );
+            }
+
+            if (!empty($shipping_Type) && !empty($shipping_Value) && $shipping_Type !== $this->cart->getShippingType()) {
+                $this->cart->saveShippingType($shipping_Type);
+
+                $payload = array( 
+                    'message'             => 'Success', 
+                    'html'                => $this->renderToString("shippingType", [
+                                                'shipping_type' => $shipping_Value
+                                             ]),
+                    'new_Total_Cart_Cost' => $this->computeCartCost($this->cart->getAllCartRecords())
+                );
+            }
+            
+            exit(json_encode($payload));
+        }
+
         public function updatePromoCode(string $promo_Code)
         {
             $payload = array();
@@ -97,34 +125,34 @@
             }
 
             if (!empty($promo_Code) && !empty($promo_Value) && $promo_Code !== $this->cart->getPromoCode()) {
+                $this->cart->savePromoCode($promo_Code);
+
                 $payload = array( 
                     'message'             => 'Success', 
                     'html'                => $this->renderToString("promoCode", [
-                                                'promo_code'  => $promo_Code,
-                                                'promo_value' => $promo_Value
+                                                'promo_code' => $promo_Value
                                              ]),
                     'promo_Code'          => $promo_Code,
-                    'new_Total_Cart_Cost' => $this->computeCartCost($this->cart->getAllCartRecords(), $promo_Value)
+                    'new_Total_Cart_Cost' => $this->computeCartCost($this->cart->getAllCartRecords())
                 );
-
-                $this->cart->savePromoCode($promo_Code);
             }
             
             if (empty($promo_Code) && $this->cart->getPromoCode()) {
+                $promo_Code = $this->cart->getPromoCode();
+                $this->cart->removePromoCode();
+
                 $payload = array( 
                     'message'             => 'Removed',
                     'html'                => '',
-                    'promo_Code'          => $this->cart->getPromoCode(),
-                    'new_Total_Cart_Cost' => $this->computeCartCost($this->cart->getAllCartRecords(), null)
+                    'promo_Code'          => $promo_Code,
+                    'new_Total_Cart_Cost' => $this->computeCartCost($this->cart->getAllCartRecords())
                 );
-
-                $this->cart->removePromoCode();
             }
 
             exit(json_encode($payload));
         }
 
-        public function computeCartCost(array $cart_Records, string $promo_Value = null)
+        public function computeCartCost(array $cart_Records)
         {
             $total_Cost = 0;
             $i = 0;
@@ -135,10 +163,24 @@
                 }
             }
 
-            if (strpos($promo_Value, '%') > 0) {
-                $total_Cost *= (100 + intval($promo_Value)) / 100;
-            } else {
-                $total_Cost += intval($promo_Value);
+            $promo_Code = $this->cart->getSinglePromoCode($this->cart->getPromoCode());
+
+            if (is_array($promo_Code) && count($promo_Code)) {
+                if (strpos($promo_Code["cost"], '%') > 0) {
+                    $total_Cost *= (100 + intval($promo_Code["cost"])) / 100;
+                } else {
+                    $total_Cost += intval($promo_Code["cost"]);
+                }
+            }
+
+            $shipping_Type = $this->cart->getSingleShippingType($this->cart->getShippingType());
+
+            if (is_array($shipping_Type) && count($shipping_Type)) {
+                if (strpos($shipping_Type["cost"], '%') > 0) {
+                    $total_Cost *= (100 + intval($shipping_Type["cost"])) / 100;
+                } else {
+                    $total_Cost += intval($shipping_Type["cost"]);
+                }
             }
         
             return round((float) $total_Cost, 2);
@@ -155,38 +197,43 @@
                     $cart_Products[] = $this->product->getSingleProduct($key);
                 } 
             }
-            
-            $promo_Code = $this->cart->getPromoCode();
-            $promo_Value = $this->cart->getSinglePromoCode($promo_Code);
+
+            $all_Shipping_Types = $this->cart->getAllShippingTypes();
+            $shipping_Type = $this->cart->getSingleShippingType($this->cart->getShippingType());
+
+            $promo_Code = $this->cart->getSinglePromoCode($this->cart->getPromoCode());
 
             $all_Product_Records = $this->product->getAllProducts();
-            $total_Cart_Cost = $this->computeCartCost($all_Cart_Records, $promo_Value);
+            $total_Cart_Cost = $this->computeCartCost($all_Cart_Records);
 
             $this->render("summary", [
-                'title'             => 'Cart Summary', 
-                'all_cart_products' => $cart_Products, 
-                'all_cart_quantity' => $all_Cart_Records,
-                'promo_code'        => $promo_Code,
-                'promo_value'       => $promo_Value,
-                'cart_cost'         => $total_Cart_Cost
+                'title'              => 'Check out',
+                'all_cart_products'  => $cart_Products, 
+                'all_cart_quantity'  => $all_Cart_Records,
+                'all_shipping_types' => $all_Shipping_Types,
+                'shipping_type'      => $shipping_Type,
+                'promo_code'         => $promo_Code,
+                'cart_cost'          => $total_Cart_Cost
             ]);
         }
 
-        public function checkout(int $retType, int $product_Id, string $pick_up_type)
+        public function checkout()
         {
             $all_Cart_Records = $this->cart->getAllCartRecords();
-            $total_Cart_Cost = (gettype($all_Cart_Records) === 'array') ? $this->computeCartCost($all_Cart_Records) : 0;
+            $total_Cart_Cost = is_array($all_Cart_Records) ? $this->computeCartCost($all_Cart_Records) : 0;
+
+            // TO-DO: Store data to database / send mail
+            // echo '<pre>'; var_dump($_POST); echo '</pre>';
              
-            if ($this->cart->removeAllCarts() && $this->cart->removePromoCode()) {   
-                $shipping_Cost = ($pick_up_type === 'UPS' ? UPS_SHIPPING_COST : PICK_UP_COST);
-                $balance = $this->user->getUserWalletBalance() - ($total_Cart_Cost + $shipping_Cost);
+            if ($this->cart->removeAllCarts() && $this->cart->removePromoCode() && $this->cart->removeShippingType()) {
+                $balance = $this->user->getUserWalletBalance() - ($total_Cart_Cost);
                 $newUserWalletBalance = $balance < 1 ? 0 : (float) $balance;
                 
                 $this->user->updateUserWalletBalance($newUserWalletBalance);
             }
             
             $this->render("checkout", [
-                'title'             => 'Checkout',
+                'title'             => 'Thank you!',
                 'thank_you_message' => '<i class="fa fa-check"></i> We just received your order. You\'ll hear from us shortly.<br/> Thank you once again.', 
                 'cart_cost'         => $total_Cart_Cost
             ]);

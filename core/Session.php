@@ -82,6 +82,30 @@
             return false;
         }
 
+        public function saveShippingType($shipping_Type)
+        {   
+            $_SESSION[USER_CART_SHIPPING_TYPE] = $shipping_Type;
+
+            return true;
+        }
+
+        public function getShippingType()
+        {
+            if (isset($_SESSION[USER_CART_SHIPPING_TYPE])) {  
+                return $_SESSION[USER_CART_SHIPPING_TYPE];    
+            }
+
+            return false;
+        }
+
+        public function removeShippingType()
+        {
+            unset($_SESSION[USER_CART_PROMO_CODE]);
+            
+            return true;
+        }
+
+
         public function savePromoCode($promo_Code)
         {   
             $_SESSION[USER_CART_PROMO_CODE] = $promo_Code;

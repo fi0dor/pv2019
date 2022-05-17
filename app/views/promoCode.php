@@ -1,8 +1,8 @@
-<?php if (!empty($data["promo_code"]) && !empty($data["promo_value"])): ?>
+<?php if (!empty($data["promo_code"])): ?>
     <div class="text-success">
         <h6 class="my-0">Promo code</h6>
-        <small><?= $data["promo_code"] ?></small>
+        <small><?= $data["promo_code"]["description"] ?></small>
     </div>
     
-    <span class="text-success"><?= $data["promo_value"] ?>&nbsp;<?= strpos($data["promo_value"], '%') > 0 ? '' : EURO ?></span>
+    <span class="text-success"><?= $data["promo_code"]["cost"] ?>&nbsp;<?= strpos($data["promo_code"]["cost"], '%') > 0 ? '' : EURO ?></span>
 <?php endif; ?>

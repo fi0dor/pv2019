@@ -49,7 +49,7 @@
                                             <span class="badge badge-light demo_cart-counter"><?= $data["count_carts"] ?></span>
                                             
                                             <i class="fa fa-university"></i>
-                                            <span class="badge badge-light demo_wallet-balance-display"><?= $data["user_wallet_balance"] . ' ' . EURO ?></span>
+                                            <span class="badge badge-light demo_wallet-balance-display" data-value="<?= $data["user_wallet_balance"] ?>"><?= $data["user_wallet_balance"] . ' ' . EURO ?></span>
                                         </a>
                                     </span>
                                 </div>

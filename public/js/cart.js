@@ -26,12 +26,11 @@ var cart = {
     jumpToNextCheckoutStep: function(event) {
         const btnElem = $(event.currentTarget);
         const curStep = btnElem.closest('.setup-content');
-        const curStepBtn = curStep.attr('id');
-        const nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').closest('.stepwizard-step').next().children('a');
-        
+        const nextStepWizard = $('.stepwizard a[href="' + btnElem.data('jump-to') + '"]');
+    
         let isValid = true;
 
-        $(':input:not([type=button]):not([type=submit]):not([type=reset])', curStep).each(function(index, item) {
+        $(':input:visible:not([type=button]):not([type=submit]):not([type=reset])', curStep).each(function(index, item) {
             if (item.checkValidity() === false) {
                 isValid = false;
             }
@@ -69,8 +68,10 @@ var cart = {
             $('#demo_modal').modal(); 
             $('#demo_modal .modal-body').html(`The promo code ${response.promo_Code} was ${action}.`);
 
-            $('.demo_checkout-gross-total').html(response.new_Total_Cart_Cost)
             $('.demo_cart-summary-promo-code').html(response.html);
+            $('.demo_checkout-gross-total span')
+                .html(response.new_Total_Cart_Cost).parent()
+                .data('value', response.new_Total_Cart_Cost);
         }).fail(function() {
             console.error('Request Failed: Promo code unknown');
         });
@@ -121,77 +122,68 @@ var cart = {
     },
 
     submitOrder: function(event) { 
-        const currElem = $(event.currentTarget);
-        const currWrap = currElem.parent();
-        
-        const shippingType = $('.demo_shipping-type').val();
-        const productCost = parseFloat($('.demo_checkout-product-cost').html());
-        const walletBalance = parseFloat($('.demo_checkout-wallet-balance').html());
-        const shippingCost = parseFloat($('.demo_checkout-shipping-cost').html());
-        const grossTotal = parseFloat($('.demo_checkout-gross-total').html());
+        const formElem = $(event.currentTarget);
+        const walletBalance = parseFloat($('.demo_wallet-balance-display').data('value'));
+        const grossTotal = parseFloat($('.demo_checkout-gross-total').data('value'));
 
         let isValid = true;
 
-        $('.demo_cart-order :input:not([type=button]):not([type=submit]):not([type=reset])').each(function(index, item) {
-            if (item.checkValidity() === false) {
-                isValid = false;
-            }
-        });
-
-        $('.demo_cart-order').addClass('was-validated');
-
-        if (shippingType === '') {
+        if (formElem[0].checkValidity() === false) {
             isValid = false;
-            
-            $('#demo_modal').modal();
-            $('#demo_modal .modal-body').html('Please select your preferred mode of shipping.');
-        } else if (grossTotal > walletBalance) {
+        };
+
+        if (grossTotal > walletBalance) {
             isValid = false;
             
             $('#demo_modal').modal();
             $('#demo_modal .modal-body').html('You do not have enough cash left in your wallet for this transaction!');
         }
 
-        if (isValid) {
-            currElem.html('processing&hellip;').attr('disabled', true);
-            window.location.href = 'cart/checkout/2/0/' + shippingType;
-        }
+        formElem.addClass('was-validated');
 
-        event.preventDefault();
-        event.stopPropagation();
+        if (isValid) {
+            $('button[type="submit"]', formElem).html('processing&hellip;').attr('disabled', true);
+        } else {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
     },
  
     checkout: function(currWrap, currElem, param3, action) { 
         this.theTransporter(currWrap, currElem, param3, action);
     },
 
-    updateShippingCost: function(currElem) {
-        var newGross = 0;
-        const shippingType = $(currElem).val();
-        const productCost = parseFloat($('.demo_checkout-product-cost').html()); 
+    updateShippingType: function(event) {
+        const shippingType = $(event.currentTarget).val();
 
-        switch (shippingType) {
-            case '':
-                $('#demo_modal').modal();
-                $('.demo_checkout-shipping-cost, .demo_checkout-gross-total').html('')
-                $('#demo_modal .modal-body').html('Please select your preferred mode of shipping.'); 
-                
-                break;
-            
-            case 'PickUp':
-                newGross = parseFloat(productCost + 0);
-                $('.demo_checkout-shipping-cost').html(0)
-                $('.demo_checkout-gross-total').html(newGross)
-                
-                break;
-            
-            default:
-                newGross = parseFloat(productCost + 5);
-                $('.demo_checkout-shipping-cost').html(5)
-                $('.demo_checkout-gross-total').html(newGross)
-                
-                break;
-        } 
+        $.getJSON('cart/updateShippingType/' + shippingType).done(function(response) {
+            if (!response.message) {
+                $('#demo_modal').modal(); 
+                $('#demo_modal .modal-body').html(`Please select your preferred mode of shipping.`);
+
+                return;
+            }
+
+            if (response.message === 'Failed') {
+                $('#demo_modal').modal(); 
+                $('#demo_modal .modal-body').html(`Such shipping type was not found.`);
+
+                return;
+            }
+
+            $('.demo_cart-summary-shipping-type').html(response.html);
+            $('.demo_checkout-gross-total span')
+                .html(response.new_Total_Cart_Cost).parent()
+                .data('value', response.new_Total_Cart_Cost);
+        }).fail(function() {
+            console.error('Request Failed: Shipping type unknown');
+        });
+    },
+
+    updateShippingAddress: function(currElem) {
+        const isSameAddress = $(currElem).val();
+
+        $('.demo_cart-shipping-address').toggleClass('d-none d-block', isSameAddress);
     },
 
     theTransporter: function(currWrap, currElem, param3, action) {
@@ -251,12 +243,15 @@ $(document).ready(function() {
     $('.demo_cart-update-btn').click(function(){cart.update(this)});
     $('.demo_cart-remove').click(function(){cart.remove(this)}); 
     
-    $('.demo_shipping-type').change(function(){cart.updateShippingCost(this)}); 
+    $('.demo_shipping-type').change(cart.updateShippingType); 
     
     $('.demo_cart-promo-code').submit(cart.redeemPromoCode);
     $('.demo_cart-order').submit(cart.submitOrder);
 
     // Disable form submissions if there are invalid fields
-    $('div.setup-panel div a').click(cart.handleCheckoutStep);
+    $('.setup-panel div a').click(cart.handleCheckoutStep);
     $('.nextBtn').click(cart.jumpToNextCheckoutStep);
+
+    // Same 'Billing' and 'Shipping' address?
+    $('#sameAddress').change(function(){cart.updateShippingAddress(this)}); 
 });

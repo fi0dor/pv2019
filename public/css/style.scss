@@ -399,12 +399,13 @@ html {
         }
     }
 
+    .demo_cart-summary-shipping-type:empty,
     .demo_cart-summary-promo-code:empty {
         display: none !important;
     }
 }
 
-.setup-content ~ .setup-content{
+.setup-content ~ .setup-content {
     display: none;
 }
 

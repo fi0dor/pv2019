@@ -9,32 +9,63 @@
 
     class Cart extends Model 
     {   
-        private $promo_Codes = array(
-            'BLACKFRIDAY22'   => '-5',
-            'BIGSALE'         => '-10 %',
-            'SUPPORT2UKRAINE' => '+50 %'
-        );
+        public function getAllShippingTypes():array
+        {   
+            if (!is_array(SHIPPING_TYPES) || empty(SHIPPING_TYPES)) {
+                return [];
+            }
+
+            return SHIPPING_TYPES;
+        }
+
+        public function getSingleShippingType(string $shipping_Type):mixed
+        {   
+            if (!is_array(SHIPPING_TYPES) || empty(SHIPPING_TYPES)) {
+                return false;
+            }
+
+            if (!array_key_exists($shipping_Type, SHIPPING_TYPES)) {
+                return false;
+            }
+
+            return array_merge(array("key" => $shipping_Type), SHIPPING_TYPES[$shipping_Type]);
+        }
+
+        public function saveShippingType(string $shipping_Type):bool
+        {
+            return $this->session->saveShippingType($shipping_Type);
+        }
+
+        public function getShippingType():mixed
+        {
+            return $this->session->getShippingType();
+        }
+
+        public function removeShippingType():bool
+        {
+            return $this->session->removeShippingType();
+        }
 
         public function getAllPromoCodes():array
         {   
-            if (!is_array($this->promo_Codes) || empty($this->promo_Codes)) {
+            if (!is_array(PROMO_CODES) || empty(PROMO_CODES)) {
                 return [];
             }
 
             return $this->promo_Codes;
         }
 
-        public function getSinglePromoCode(string $promo_Code):string
+        public function getSinglePromoCode(string $promo_Code):mixed
         {   
-            if (!is_array($this->promo_Codes) || empty($this->promo_Codes)) {
+            if (!is_array(PROMO_CODES) || empty(PROMO_CODES)) {
                 return false;
             }
 
-            if (!array_key_exists($promo_Code, $this->promo_Codes)) {
+            if (!array_key_exists($promo_Code, PROMO_CODES)) {
                 return false;
             }
 
-            return $this->promo_Codes[$promo_Code];
+            return array_merge(array("key" => $promo_Code), PROMO_CODES[$promo_Code]);
         }
 
         public function savePromoCode(string $promo_Code):bool
